@@ -1,5 +1,9 @@
 # rendershot
 
+[![CI](https://github.com/Rendershot/rendershot-node/actions/workflows/ci.yml/badge.svg)](https://github.com/Rendershot/rendershot-node/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/rendershot)](https://www.npmjs.com/package/rendershot)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Node.js SDK for the [Rendershot](https://rendershot.io) screenshot & PDF generation API.
 
 ## Installation
