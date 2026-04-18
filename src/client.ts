@@ -309,7 +309,7 @@ export class RenderShotClient {
       viewport: options.viewport ?? {},
       fullPage: options.fullPage ?? false,
       clip: options.clip,
-      waitFor: options.waitFor ?? 'networkidle',
+      waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
     });
     try {
@@ -350,7 +350,7 @@ export class RenderShotClient {
       viewport: options.viewport ?? {},
       fullPage: options.fullPage ?? false,
       clip: options.clip,
-      waitFor: options.waitFor ?? 'networkidle',
+      waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
     });
     const response = await this.post('/v1/screenshot', payload);
@@ -376,7 +376,7 @@ export class RenderShotClient {
       orientation: options.orientation ?? 'portrait',
       margin: options.margin ?? {},
       printBackground: options.printBackground ?? true,
-      waitFor: options.waitFor ?? 'networkidle',
+      waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
     });
     try {
@@ -416,7 +416,7 @@ export class RenderShotClient {
       orientation: options.orientation ?? 'portrait',
       margin: options.margin ?? {},
       printBackground: options.printBackground ?? true,
-      waitFor: options.waitFor ?? 'networkidle',
+      waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
     });
     const response = await this.post('/v1/pdf', payload);
@@ -461,7 +461,7 @@ export class RenderShotClient {
         viewport: options.viewport ?? {},
         fullPage: options.fullPage ?? false,
         clip: options.clip,
-        waitFor: options.waitFor ?? 'networkidle',
+        waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
       }),
       type: 'screenshot',
@@ -491,7 +491,7 @@ export class RenderShotClient {
         viewport: options.viewport ?? {},
         fullPage: options.fullPage ?? false,
         clip: options.clip,
-        waitFor: options.waitFor ?? 'networkidle',
+        waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
       }),
       type: 'screenshot',
@@ -519,7 +519,7 @@ export class RenderShotClient {
         orientation: options.orientation ?? 'portrait',
         margin: options.margin ?? {},
         printBackground: options.printBackground ?? true,
-        waitFor: options.waitFor ?? 'networkidle',
+        waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
       }),
       type: 'pdf',
@@ -548,7 +548,7 @@ export class RenderShotClient {
         orientation: options.orientation ?? 'portrait',
         margin: options.margin ?? {},
         printBackground: options.printBackground ?? true,
-        waitFor: options.waitFor ?? 'networkidle',
+        waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
       }),
       type: 'pdf',

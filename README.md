@@ -56,26 +56,28 @@ const pdfPaths = await client.bulkPdfFromTemplate(
 );
 ```
 
-## Handling networkidle timeouts
+## Handling network_idle timeouts
 
-Some URLs never reach `networkidle` (e.g. sites with persistent WebSocket connections). Use `timeoutFallbackTo` to automatically retry with a different wait strategy when a timeout occurs:
+Some URLs never reach `network_idle` (e.g. sites with persistent WebSocket connections). Use `timeoutFallbackTo` to automatically retry with a different wait strategy when a timeout occurs:
 
 ```typescript
 // Single URL — retries automatically on timeout
 const png = await client.screenshotUrl('https://example.com', {
-  timeoutFallbackTo: 'domcontentloaded',
+  waitFor: 'network_idle',
+  timeoutFallbackTo: 'dom_content_loaded',
 });
 
 // Save to file
 await client.screenshotUrlToFile('https://example.com', 'screenshot.png', {
-  timeoutFallbackTo: 'domcontentloaded',
+  waitFor: 'network_idle',
+  timeoutFallbackTo: 'dom_content_loaded',
 });
 
 // Bulk — each timed-out job is individually retried
 const paths = await client.bulkScreenshotUrls(
   ['https://example.com', 'https://example2.com'],
   './screenshots',
-  { timeoutFallbackTo: 'domcontentloaded' },
+  { waitFor: 'network_idle', timeoutFallbackTo: 'dom_content_loaded' },
 );
 ```
 

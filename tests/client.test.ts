@@ -200,12 +200,12 @@ describe('RenderShotClient', () => {
         .mockResolvedValueOnce(binaryResponse(FAKE_PNG));
 
       const result = await client.screenshotUrl('https://example.com', {
-        timeoutFallbackTo: 'domcontentloaded',
+        timeoutFallbackTo: 'dom_content_loaded',
       });
       expect(Buffer.compare(result, FAKE_PNG)).toBe(0);
       expect(fetchMock).toHaveBeenCalledTimes(2);
       const secondBody = JSON.parse(fetchMock.mock.calls[1][1].body);
-      expect(secondBody.wait_for).toBe('domcontentloaded');
+      expect(secondBody.wait_for).toBe('dom_content_loaded');
     });
 
     it('throws without fallback on timeout', async () => {
