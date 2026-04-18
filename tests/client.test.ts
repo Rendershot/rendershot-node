@@ -221,6 +221,29 @@ describe('RenderShotClient', () => {
     });
   });
 
+  describe('ai_cleanup', () => {
+    it('sends ai_cleanup when provided on screenshot', async () => {
+      fetchMock.mockResolvedValueOnce(binaryResponse(FAKE_PNG));
+      await client.screenshotUrl('https://example.com', { aiCleanup: 'fast' });
+      const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+      expect(body.ai_cleanup).toBe('fast');
+    });
+
+    it('omits ai_cleanup when not provided', async () => {
+      fetchMock.mockResolvedValueOnce(binaryResponse(FAKE_PNG));
+      await client.screenshotUrl('https://example.com');
+      const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+      expect(body).not.toHaveProperty('ai_cleanup');
+    });
+
+    it('sends ai_cleanup when provided on pdf', async () => {
+      fetchMock.mockResolvedValueOnce(binaryResponse(FAKE_PDF));
+      await client.pdfUrl('https://example.com', { aiCleanup: 'thorough' });
+      const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+      expect(body.ai_cleanup).toBe('thorough');
+    });
+  });
+
   describe('bulk', () => {
     it('bulkScreenshotUrls downloads and saves files', async () => {
       fetchMock

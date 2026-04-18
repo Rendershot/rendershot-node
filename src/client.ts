@@ -9,6 +9,7 @@ import {
   RateLimitError,
 } from './errors.js';
 import type {
+  AICleanupMode,
   BulkJobResult,
   BulkOptions,
   BulkRenderResponse,
@@ -38,6 +39,7 @@ function buildScreenshotPayload(options: {
   clip?: ClipParams;
   waitFor: string;
   delayMs: number;
+  aiCleanup?: AICleanupMode;
 }): Record<string, unknown> {
   const payload: Record<string, unknown> = {
     format: options.format,
@@ -54,6 +56,7 @@ function buildScreenshotPayload(options: {
   if (options.url !== undefined) payload.url = options.url;
   if (options.html !== undefined) payload.html = options.html;
   if (options.clip !== undefined) payload.clip = options.clip;
+  if (options.aiCleanup !== undefined) payload.ai_cleanup = options.aiCleanup;
   return payload;
 }
 
@@ -66,6 +69,7 @@ function buildPdfPayload(options: {
   printBackground: boolean;
   waitFor: string;
   delayMs: number;
+  aiCleanup?: AICleanupMode;
 }): Record<string, unknown> {
   const payload: Record<string, unknown> = {
     format: options.format,
@@ -82,6 +86,7 @@ function buildPdfPayload(options: {
   };
   if (options.url !== undefined) payload.url = options.url;
   if (options.html !== undefined) payload.html = options.html;
+  if (options.aiCleanup !== undefined) payload.ai_cleanup = options.aiCleanup;
   return payload;
 }
 
@@ -311,6 +316,7 @@ export class RenderShotClient {
       clip: options.clip,
       waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
+      aiCleanup: options.aiCleanup,
     });
     try {
       const response = await this.post('/v1/screenshot', payload);
@@ -352,6 +358,7 @@ export class RenderShotClient {
       clip: options.clip,
       waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
+      aiCleanup: options.aiCleanup,
     });
     const response = await this.post('/v1/screenshot', payload);
     return Buffer.from(await response.arrayBuffer());
@@ -378,6 +385,7 @@ export class RenderShotClient {
       printBackground: options.printBackground ?? true,
       waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
+      aiCleanup: options.aiCleanup,
     });
     try {
       const response = await this.post('/v1/pdf', payload);
@@ -418,6 +426,7 @@ export class RenderShotClient {
       printBackground: options.printBackground ?? true,
       waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
+      aiCleanup: options.aiCleanup,
     });
     const response = await this.post('/v1/pdf', payload);
     return Buffer.from(await response.arrayBuffer());
@@ -463,6 +472,7 @@ export class RenderShotClient {
         clip: options.clip,
         waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
+        aiCleanup: options.aiCleanup,
       }),
       type: 'screenshot',
     }));
@@ -493,6 +503,7 @@ export class RenderShotClient {
         clip: options.clip,
         waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
+        aiCleanup: options.aiCleanup,
       }),
       type: 'screenshot',
     }));
@@ -521,6 +532,7 @@ export class RenderShotClient {
         printBackground: options.printBackground ?? true,
         waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
+        aiCleanup: options.aiCleanup,
       }),
       type: 'pdf',
     }));
@@ -550,6 +562,7 @@ export class RenderShotClient {
         printBackground: options.printBackground ?? true,
         waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
+        aiCleanup: options.aiCleanup,
       }),
       type: 'pdf',
     }));

@@ -56,6 +56,25 @@ const pdfPaths = await client.bulkPdfFromTemplate(
 );
 ```
 
+## AI cleanup (remove cookie banners & popups)
+
+Pass `aiCleanup` to have the backend strip common cookie banners, consent overlays, and popup modals before the render. Two modes:
+
+- `'fast'` — JS heuristics (1 credit, same as a plain render).
+- `'thorough'` — adds a Claude LLM pass that snapshots the DOM and identifies remaining overlays (3 credits; backend must have an Anthropic key configured).
+
+```typescript
+const png = await client.screenshotUrl('https://example.com', {
+  aiCleanup: 'fast',
+});
+
+const pdf = await client.pdfUrl('https://example.com', {
+  aiCleanup: 'thorough',
+});
+```
+
+Works on all single and bulk methods.
+
 ## Handling network_idle timeouts
 
 Some URLs never reach `network_idle` (e.g. sites with persistent WebSocket connections). Use `timeoutFallbackTo` to automatically retry with a different wait strategy when a timeout occurs:

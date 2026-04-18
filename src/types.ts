@@ -4,6 +4,8 @@ export type PDFFormat = 'A3' | 'A4' | 'Letter' | 'Legal';
 
 export type PDFOrientation = 'portrait' | 'landscape';
 
+export type AICleanupMode = 'fast' | 'thorough';
+
 export interface ViewportParams {
   width?: number;
   height?: number;
@@ -32,6 +34,7 @@ export interface ScreenshotOptions {
   clip?: ClipParams;
   waitFor?: string;
   delayMs?: number;
+  aiCleanup?: AICleanupMode;
   timeoutFallbackTo?: string;
 }
 
@@ -42,6 +45,7 @@ export interface PDFOptions {
   printBackground?: boolean;
   waitFor?: string;
   delayMs?: number;
+  aiCleanup?: AICleanupMode;
   timeoutFallbackTo?: string;
 }
 
