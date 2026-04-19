@@ -26,7 +26,38 @@ export interface MarginParams {
   left?: string;
 }
 
-export interface ScreenshotOptions {
+export type SameSite = 'Lax' | 'Strict' | 'None';
+
+export interface Cookie {
+  name: string;
+  value: string;
+  domain?: string;
+  path?: string;
+  url?: string;
+  expires?: number;
+  httpOnly?: boolean;
+  secure?: boolean;
+  sameSite?: SameSite;
+}
+
+export interface BasicAuth {
+  username: string;
+  password: string;
+}
+
+/**
+ * Optional fields for rendering pages behind a login.
+ *
+ * Credentials are never persisted by the backend — they live only on the
+ * request payload for the duration of the render.
+ */
+export interface AuthRenderOptions {
+  headers?: Record<string, string>;
+  cookies?: Cookie[];
+  basicAuth?: BasicAuth;
+}
+
+export interface ScreenshotOptions extends AuthRenderOptions {
   format?: ScreenshotFormat;
   quality?: number;
   viewport?: ViewportParams;
@@ -38,7 +69,7 @@ export interface ScreenshotOptions {
   timeoutFallbackTo?: string;
 }
 
-export interface PDFOptions {
+export interface PDFOptions extends AuthRenderOptions {
   format?: PDFFormat;
   orientation?: PDFOrientation;
   margin?: MarginParams;

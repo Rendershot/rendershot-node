@@ -75,6 +75,71 @@ const pdf = await client.pdfUrl('https://example.com', {
 
 Works on all single and bulk methods.
 
+## Authenticated pages
+
+Render pages behind a login by passing custom HTTP headers, session cookies, or HTTP Basic auth with the request. Credentials never persist — they ride on the request payload only.
+
+```typescript
+// Bearer token + session cookie
+const png = await client.screenshotUrl('https://app.example.com/dashboard', {
+  headers: {
+    Authorization: 'Bearer sk_internal_...',
+    'X-Tenant-Id': 'acme',
+  },
+  cookies: [
+    {
+      name: 'session_id',
+      value: 'eyJhbGciOi...',
+      domain: 'app.example.com',
+      path: '/',
+      secure: true,
+      httpOnly: true,
+      sameSite: 'Lax',
+    },
+  ],
+});
+
+// HTTP Basic auth
+const pdf = await client.pdfUrl('https://staging.example.com/report', {
+  basicAuth: { username: 'staging', password: 'hunter2' },
+});
+```
+
+Reserved header names (`Host`, `Cookie`, `Content-Length`, `Sec-*`, `Connection`) are rejected server-side. Max 30 headers / 50 cookies per request; header values up to 2 KB.
+
+## Verifying webhook signatures
+
+Rendershot signs every outbound webhook POST with HMAC-SHA256 over `` `${timestamp}.${body}` `` using the per-endpoint secret shown on the Webhooks dashboard. Use the SDK helpers in your receiver to reject forged or replayed requests.
+
+```typescript
+import express from 'express';
+import { isValidSignature, SIGNATURE_HEADER, TIMESTAMP_HEADER } from 'rendershot';
+
+const WEBHOOK_SECRET = 'your-endpoint-secret'; // from the dashboard
+
+const app = express();
+
+// IMPORTANT: use the raw body, not a parsed one — the signature covers bytes.
+app.post(
+  '/rendershot-webhook',
+  express.raw({ type: 'application/json' }),
+  (req, res) => {
+    const ok = isValidSignature(
+      WEBHOOK_SECRET,
+      req.body,
+      req.header(SIGNATURE_HEADER),
+      req.header(TIMESTAMP_HEADER),
+    );
+    if (!ok) return res.status(400).send('bad signature');
+    const payload = JSON.parse(req.body.toString('utf-8'));
+    // ... handle job.completed / job.failed ...
+    res.sendStatus(200);
+  },
+);
+```
+
+`verifySignature` throws `WebhookVerificationError` instead of returning a bool if you prefer exception-based flow. Both accept `{ maxAgeSeconds: 300 }` (default) to bound replay attacks.
+
 ## Handling network_idle timeouts
 
 Some URLs never reach `network_idle` (e.g. sites with persistent WebSocket connections). Use `timeoutFallbackTo` to automatically retry with a different wait strategy when a timeout occurs:
