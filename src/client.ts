@@ -10,11 +10,14 @@ import {
 } from './errors.js';
 import type {
   AICleanupMode,
+  AuthRenderOptions,
+  BasicAuth,
   BulkJobResult,
   BulkOptions,
   BulkRenderResponse,
   ClipParams,
   ClientOptions,
+  Cookie,
   CreditBalance,
   MarginParams,
   PDFFormat,
@@ -29,6 +32,40 @@ const DEFAULT_BASE_URL = 'https://api.rendershot.io';
 const BULK_BATCH_SIZE = 20;
 const HTTP_TIMEOUT_MS = 120_000;
 
+/**
+ * Serialise a Cookie (camelCase SDK shape) to the snake_case payload the
+ * backend expects. Kept here so both screenshot and PDF payloads stay in lock-step.
+ */
+function serialiseCookie(cookie: Cookie): Record<string, unknown> {
+  const out: Record<string, unknown> = { name: cookie.name, value: cookie.value };
+  if (cookie.domain !== undefined) out.domain = cookie.domain;
+  if (cookie.path !== undefined) out.path = cookie.path;
+  if (cookie.url !== undefined) out.url = cookie.url;
+  if (cookie.expires !== undefined) out.expires = cookie.expires;
+  if (cookie.httpOnly !== undefined) out.http_only = cookie.httpOnly;
+  if (cookie.secure !== undefined) out.secure = cookie.secure;
+  if (cookie.sameSite !== undefined) out.same_site = cookie.sameSite;
+  return out;
+}
+
+function applyAuthFields(
+  payload: Record<string, unknown>,
+  options: AuthRenderOptions,
+): void {
+  if (options.headers && Object.keys(options.headers).length > 0) {
+    payload.headers = options.headers;
+  }
+  if (options.cookies && options.cookies.length > 0) {
+    payload.cookies = options.cookies.map(serialiseCookie);
+  }
+  if (options.basicAuth !== undefined) {
+    payload.basic_auth = {
+      username: options.basicAuth.username,
+      password: options.basicAuth.password,
+    };
+  }
+}
+
 function buildScreenshotPayload(options: {
   url?: string;
   html?: string;
@@ -40,6 +77,9 @@ function buildScreenshotPayload(options: {
   waitFor: string;
   delayMs: number;
   aiCleanup?: AICleanupMode;
+  headers?: Record<string, string>;
+  cookies?: Cookie[];
+  basicAuth?: BasicAuth;
 }): Record<string, unknown> {
   const payload: Record<string, unknown> = {
     format: options.format,
@@ -57,6 +97,7 @@ function buildScreenshotPayload(options: {
   if (options.html !== undefined) payload.html = options.html;
   if (options.clip !== undefined) payload.clip = options.clip;
   if (options.aiCleanup !== undefined) payload.ai_cleanup = options.aiCleanup;
+  applyAuthFields(payload, options);
   return payload;
 }
 
@@ -70,6 +111,9 @@ function buildPdfPayload(options: {
   waitFor: string;
   delayMs: number;
   aiCleanup?: AICleanupMode;
+  headers?: Record<string, string>;
+  cookies?: Cookie[];
+  basicAuth?: BasicAuth;
 }): Record<string, unknown> {
   const payload: Record<string, unknown> = {
     format: options.format,
@@ -87,6 +131,7 @@ function buildPdfPayload(options: {
   if (options.url !== undefined) payload.url = options.url;
   if (options.html !== undefined) payload.html = options.html;
   if (options.aiCleanup !== undefined) payload.ai_cleanup = options.aiCleanup;
+  applyAuthFields(payload, options);
   return payload;
 }
 
@@ -317,6 +362,9 @@ export class RenderShotClient {
       waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
       aiCleanup: options.aiCleanup,
+      headers: options.headers,
+      cookies: options.cookies,
+      basicAuth: options.basicAuth,
     });
     try {
       const response = await this.post('/v1/screenshot', payload);
@@ -359,6 +407,9 @@ export class RenderShotClient {
       waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
       aiCleanup: options.aiCleanup,
+      headers: options.headers,
+      cookies: options.cookies,
+      basicAuth: options.basicAuth,
     });
     const response = await this.post('/v1/screenshot', payload);
     return Buffer.from(await response.arrayBuffer());
@@ -386,6 +437,9 @@ export class RenderShotClient {
       waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
       aiCleanup: options.aiCleanup,
+      headers: options.headers,
+      cookies: options.cookies,
+      basicAuth: options.basicAuth,
     });
     try {
       const response = await this.post('/v1/pdf', payload);
@@ -427,6 +481,9 @@ export class RenderShotClient {
       waitFor: options.waitFor ?? 'dom_content_loaded',
       delayMs: options.delayMs ?? 0,
       aiCleanup: options.aiCleanup,
+      headers: options.headers,
+      cookies: options.cookies,
+      basicAuth: options.basicAuth,
     });
     const response = await this.post('/v1/pdf', payload);
     return Buffer.from(await response.arrayBuffer());
@@ -473,6 +530,9 @@ export class RenderShotClient {
         waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
         aiCleanup: options.aiCleanup,
+        headers: options.headers,
+        cookies: options.cookies,
+        basicAuth: options.basicAuth,
       }),
       type: 'screenshot',
     }));
@@ -504,6 +564,9 @@ export class RenderShotClient {
         waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
         aiCleanup: options.aiCleanup,
+        headers: options.headers,
+        cookies: options.cookies,
+        basicAuth: options.basicAuth,
       }),
       type: 'screenshot',
     }));
@@ -533,6 +596,9 @@ export class RenderShotClient {
         waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
         aiCleanup: options.aiCleanup,
+        headers: options.headers,
+        cookies: options.cookies,
+        basicAuth: options.basicAuth,
       }),
       type: 'pdf',
     }));
@@ -563,6 +629,9 @@ export class RenderShotClient {
         waitFor: options.waitFor ?? 'dom_content_loaded',
         delayMs: options.delayMs ?? 0,
         aiCleanup: options.aiCleanup,
+        headers: options.headers,
+        cookies: options.cookies,
+        basicAuth: options.basicAuth,
       }),
       type: 'pdf',
     }));
